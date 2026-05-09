@@ -1,0 +1,68 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual Environment
+myenv/
+env/
+.venv/
+
+# Environment Variables
+.env
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Uploaded Files
+uploads/
+
+# Extracted Audio
+audio/
+
+# Transcripts
+transcripts/
+
+# Chroma Vector DB
+chroma_db/
+
+# Logs
+*.log
+
+# Temporary Files
+temp/
+tmp/
+
+# Model Cache
+.cache/
+hf_cache/
+
+# Whisper Cache
+.whisper/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Build Files
+build/
+dist/
+
+# Testing
+.pytest_cache/
+
+# SQLite
+*.sqlite3
+
+# FastAPI Cache
+*.db
+
+# Node Modules (if frontend inside same repo)
+node_modules/
