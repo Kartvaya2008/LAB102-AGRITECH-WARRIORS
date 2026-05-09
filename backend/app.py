@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from pydantic import BaseModel
+from quiz_pipeline import generate_quiz
 
 import shutil
 import os
@@ -50,6 +51,9 @@ class ChatRequest(BaseModel):
 
 class SummaryRequest(BaseModel):
     current_time: float
+
+class QuizRequest(BaseModel):
+    num_questions: int = 5
 
 @app.get("/")
 def home():
@@ -186,6 +190,33 @@ async def last_5_min_summary(
 
         return {
             "summary": summary
+        }
+
+    except Exception as e:
+
+        return {
+            "error": str(e)
+        }
+    
+
+@app.post("/generate-quiz")
+async def generate_quiz_api(
+    request: QuizRequest
+):
+
+    try:
+
+        transcript_data = load_transcript(
+            LATEST_TRANSCRIPT_PATH
+        )
+
+        quiz = generate_quiz(
+            transcript_data,
+            request.num_questions
+        )
+
+        return {
+            "quiz": quiz
         }
 
     except Exception as e:
