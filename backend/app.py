@@ -21,6 +21,10 @@ from vector_store import (
     create_chunks,
     store_in_chroma
 )
+from pdf_pipeline import (
+    extract_pdf_text,
+    create_pdf_chunks
+)
 
 from summary_pipeline import (
     generate_topic_summary,
@@ -218,6 +222,52 @@ async def generate_quiz_api(
         return {
             "quiz": quiz
         }
+
+    except Exception as e:
+
+        return {
+            "error": str(e)
+        }
+
+@app.post("/upload-pdf")
+async def upload_pdf(file: UploadFile = File(...)):
+
+    try:
+
+        pdf_path = os.path.join(
+            "pdfs",
+            file.filename
+        )
+
+        with open(pdf_path, "wb") as buffer:
+
+            shutil.copyfileobj(
+                file.file,
+                buffer
+            )
+
+
+        # Extract PDF text
+        pages = extract_pdf_text(
+            pdf_path
+        )
+
+        # Create chunks
+        documents = create_pdf_chunks(
+            pages
+        )
+
+
+        # Store in Chroma
+        store_in_chroma(documents)
+
+
+        return {
+            "message": "PDF uploaded successfully",
+            "pages": len(pages),
+            "chunks_created": len(documents)
+        }
+
 
     except Exception as e:
 

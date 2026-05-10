@@ -83,4 +83,16 @@ Lecture Transcript:
 
     response = llm.invoke(prompt)
 
-    return response.content
+    import json
+
+    try:
+
+        return json.loads(
+            response.content
+        )
+
+    except Exception as e:
+
+        print(e)
+
+        return []

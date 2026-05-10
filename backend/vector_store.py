@@ -43,6 +43,7 @@ def create_chunks(transcript_data, chunk_size=3):
             doc = Document(
                 page_content=chunk_text,
                 metadata={
+                    "source_type": "video",
                     "start_time": start_time,
                     "end_time": end_time
                 }
@@ -82,12 +83,11 @@ def load_transcript(transcript_path):
 
 def store_in_chroma(documents):
 
-    vectordb = Chroma.from_documents(
-        documents=documents,
-        embedding=embedding_model,
-        persist_directory=CHROMA_DB_DIR
+    vectordb = Chroma(
+        persist_directory=CHROMA_DB_DIR,
+        embedding_function=embedding_model
     )
 
-    vectordb.persist()
+    vectordb.add_documents(documents)
 
     return vectordb
