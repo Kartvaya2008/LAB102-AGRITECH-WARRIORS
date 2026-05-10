@@ -23,16 +23,16 @@ env/
 Thumbs.db
 
 # Uploaded Files
-uploads/
+
 
 # Extracted Audio
-audio/
+
 
 # Transcripts
-transcripts/
+
 
 # Chroma Vector DB
-chroma_db/
+
 
 # Logs
 *.log
