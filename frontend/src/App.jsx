@@ -19,6 +19,7 @@ import {
 } from "react";
 
 import axios from "axios";
+import PDFViewer from "./PDFViewer";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
@@ -1002,7 +1003,7 @@ function App() {
             </h2>
           </div>
 
-          {!pdfViewerURL ? (
+          {!pdfMetadata ? (
             /* Upload Screen (When no PDF is loaded yet) */
             <div className="max-w-xl mx-auto mt-12">
               <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl space-y-6">
@@ -1047,41 +1048,14 @@ function App() {
             /* Active Workspace Screen (When PDF is loaded) */
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               
-              {/* Left Column (2/3 width): Embedded PDF Viewer */}
-              <div className="lg:col-span-2 space-y-4">
-                <div className="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl flex flex-col h-[800px]">
-                  <div className="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
-                    <div className="flex items-center gap-3">
-                      <FileText className="text-purple-400" />
-                      <h3 className="font-bold text-lg text-slate-200 truncate max-w-sm md:max-w-md">
-                        {pdfMetadata?.name || "Active Document"}
-                      </h3>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="text-xs bg-slate-800 px-3 py-1.5 rounded-full text-slate-400 font-semibold">
-                        Page {pdfActivePage} / {pdfMetadata?.pages || "?"}
-                      </div>
-                      {pdfViewerURL && (
-                        <a
-                          href={pdfViewerURL}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="bg-slate-800 hover:bg-slate-750 text-purple-300 hover:text-purple-200 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border border-slate-700 flex items-center gap-1.5"
-                        >
-                          <ExternalLink size={13} />
-                          Full View
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <iframe
-                    key={`${pdfViewerURL}-${pdfActivePage}`}
-                    src={`${pdfViewerURL}#page=${pdfActivePage}`}
-                    className="w-full flex-grow rounded-2xl border border-slate-850 bg-slate-950"
-                    title="PDF Viewer"
-                  />
-                </div>
+              {/* Left Column (2/3 width): Native Canvas PDF Viewer (100% Edge/Chrome/HF compatible) */}
+              <div className="lg:col-span-2">
+                <PDFViewer
+                  file={pdfFile}
+                  activePage={pdfActivePage}
+                  onPageChange={(page) => setPdfActivePage(page)}
+                  title={pdfMetadata?.name || "Active Document"}
+                />
               </div>
 
               {/* Right Column (1/3 width): PDF Info & AI Tutor Chat */}
@@ -1094,10 +1068,6 @@ function App() {
                       <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400">File Info</h4>
                       <button 
                         onClick={() => {
-                          if (pdfViewerURL && pdfViewerURL.startsWith("blob:")) {
-                            URL.revokeObjectURL(pdfViewerURL);
-                          }
-                          setPdfViewerURL("");
                           setPdfFile(null);
                           setPdfMetadata(null);
                         }} 
