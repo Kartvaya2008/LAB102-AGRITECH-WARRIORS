@@ -902,7 +902,7 @@ function App() {
                     Refresh
                   </button>
                 </div>
-                <div className="text-slate-300 leading-8 whitespace-pre-wrap">
+                <div className="text-slate-300 leading-7 whitespace-pre-wrap max-h-[300px] overflow-y-auto pr-2">
                   {last5Summary || "AI will summarize the current lecture section automatically."}
                 </div>
               </div>
