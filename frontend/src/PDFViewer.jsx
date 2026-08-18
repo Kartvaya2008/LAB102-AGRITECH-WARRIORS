@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import * as pdfjsLib from "pdfjs-dist";
-import pdfWorkerSrc from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import {
   ChevronLeft,
   ChevronRight,
@@ -12,7 +11,7 @@ import {
   Loader2,
 } from "lucide-react";
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerSrc;
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version || "6.2.108"}/build/pdf.worker.min.mjs`;
 
 export default function PDFViewer({
   file,
