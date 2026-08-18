@@ -9,6 +9,7 @@ import {
   PlayCircle,
   MessageSquare,
   FileQuestion,
+  ExternalLink,
 } from "lucide-react";
 
 import {
@@ -243,7 +244,8 @@ function App() {
         chunks: response.data.chunks_created || 0,
       });
 
-      setPdfViewerURL(`${API_BASE_URL}/pdfs/${response.data.filename}`);
+      const localBlobURL = URL.createObjectURL(pdfFile);
+      setPdfViewerURL(localBlobURL);
       setPdfActivePage(1);
 
     } catch (error) {
@@ -1051,17 +1053,30 @@ function App() {
                   <div className="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
                     <div className="flex items-center gap-3">
                       <FileText className="text-purple-400" />
-                      <h3 className="font-bold text-lg text-slate-200 truncate max-w-lg">
+                      <h3 className="font-bold text-lg text-slate-200 truncate max-w-sm md:max-w-md">
                         {pdfMetadata?.name || "Active Document"}
                       </h3>
                     </div>
-                    <div className="text-xs bg-slate-800 px-3 py-1 rounded-full text-slate-400 font-semibold">
-                      Viewing Page: {pdfActivePage} / {pdfMetadata?.pages || "?"}
+                    <div className="flex items-center gap-3">
+                      <div className="text-xs bg-slate-800 px-3 py-1.5 rounded-full text-slate-400 font-semibold">
+                        Page {pdfActivePage} / {pdfMetadata?.pages || "?"}
+                      </div>
+                      {pdfViewerURL && (
+                        <a
+                          href={pdfViewerURL}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-slate-800 hover:bg-slate-750 text-purple-300 hover:text-purple-200 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border border-slate-700 flex items-center gap-1.5"
+                        >
+                          <ExternalLink size={13} />
+                          Full View
+                        </a>
+                      )}
                     </div>
                   </div>
                   
                   <iframe
-                    key={pdfActivePage}
+                    key={`${pdfViewerURL}-${pdfActivePage}`}
                     src={`${pdfViewerURL}#page=${pdfActivePage}`}
                     className="w-full flex-grow rounded-2xl border border-slate-850 bg-slate-950"
                     title="PDF Viewer"
@@ -1079,6 +1094,9 @@ function App() {
                       <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400">File Info</h4>
                       <button 
                         onClick={() => {
+                          if (pdfViewerURL && pdfViewerURL.startsWith("blob:")) {
+                            URL.revokeObjectURL(pdfViewerURL);
+                          }
                           setPdfViewerURL("");
                           setPdfFile(null);
                           setPdfMetadata(null);
