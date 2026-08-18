@@ -17,5 +17,4 @@ chromadb
 
 groq
 python-dotenv
-pymupdf
-fitz
+PyMuPDF

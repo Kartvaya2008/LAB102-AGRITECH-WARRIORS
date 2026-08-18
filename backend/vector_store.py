@@ -91,3 +91,30 @@ def store_in_chroma(documents):
     vectordb.add_documents(documents)
 
     return vectordb
+
+
+def clear_chroma():
+
+    try:
+
+        vectordb = Chroma(
+            persist_directory=CHROMA_DB_DIR,
+            embedding_function=embedding_model
+        )
+
+        vectordb.delete_collection()
+
+    except Exception as e:
+
+        print(f"Error clearing Chroma DB collection: {e}")
+
+    # Clean up unlocked index subdirectories (from older sessions or deleted collections)
+    import shutil
+    if os.path.exists(CHROMA_DB_DIR):
+        for item in os.listdir(CHROMA_DB_DIR):
+            item_path = os.path.join(CHROMA_DB_DIR, item)
+            if os.path.isdir(item_path) and item != "." and item != "..":
+                try:
+                    shutil.rmtree(item_path)
+                except Exception:
+                    pass

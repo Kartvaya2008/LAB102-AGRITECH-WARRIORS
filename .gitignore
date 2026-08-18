@@ -1,0 +1,38 @@
+# Deploy clones
+hf_backend_deploy/
+hf_frontend_deploy/
+
+# Python Virtual Environments
+myenv/
+venv/
+.venv/
+backend/myenv/
+backend/venv/
+backend/.venv/
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.development.local
+.env.production.local
+backend/.env
+
+# Local Storage / Vector DB / Uploads
+backend/chroma_db/
+backend/uploads/
+backend/audio/
+backend/transcripts/
+backend/pdfs/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

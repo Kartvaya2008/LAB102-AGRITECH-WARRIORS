@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -19,7 +20,8 @@ from transcriber import (
 from vector_store import (
     load_transcript,
     create_chunks,
-    store_in_chroma
+    store_in_chroma,
+    clear_chroma
 )
 from pdf_pipeline import (
     extract_pdf_text,
@@ -33,6 +35,7 @@ from summary_pipeline import (
 )
 
 from rag_pipeline import ask_question
+from utils import clear_directory, safely_delete_file
 
 
 app = FastAPI()
@@ -44,6 +47,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.mount("/pdfs", StaticFiles(directory="pdfs"), name="pdfs")
 
 UPLOAD_FOLDER = "uploads"
 
@@ -72,6 +77,12 @@ async def upload_video(file: UploadFile = File(...)):
 
     try:
 
+        # Clear folders to start fresh
+        clear_directory("uploads")
+        clear_directory("audio")
+        clear_directory("transcripts")
+        clear_directory("pdfs")
+
         # Save video
         file_path = os.path.join(
             UPLOAD_FOLDER,
@@ -99,6 +110,10 @@ async def upload_video(file: UploadFile = File(...)):
 
         LATEST_TRANSCRIPT_PATH = transcript_path
 
+        # Safely delete raw video and audio files from backend
+        safely_delete_file(file_path)
+        safely_delete_file(audio_path)
+
         # Load transcript
         transcript_json = load_transcript(
             transcript_path
@@ -108,6 +123,9 @@ async def upload_video(file: UploadFile = File(...)):
         documents = create_chunks(
             transcript_json
         )
+
+        # Clear existing Chroma DB collection
+        clear_chroma()
 
         # Store in ChromaDB
         store_in_chroma(documents)
@@ -234,6 +252,12 @@ async def upload_pdf(file: UploadFile = File(...)):
 
     try:
 
+        # Clear folders to start fresh
+        clear_directory("uploads")
+        clear_directory("audio")
+        clear_directory("transcripts")
+        clear_directory("pdfs")
+
         pdf_path = os.path.join(
             "pdfs",
             file.filename
@@ -258,6 +282,9 @@ async def upload_pdf(file: UploadFile = File(...)):
         )
 
 
+        # Clear existing Chroma DB collection
+        clear_chroma()
+
         # Store in Chroma
         store_in_chroma(documents)
 
@@ -265,12 +292,16 @@ async def upload_pdf(file: UploadFile = File(...)):
         return {
             "message": "PDF uploaded successfully",
             "pages": len(pages),
-            "chunks_created": len(documents)
+            "chunks_created": len(documents),
+            "filename": file.filename
         }
 
 
     except Exception as e:
 
-        return {
-            "error": str(e)
-        }
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": str(e)
+            }
+        )
