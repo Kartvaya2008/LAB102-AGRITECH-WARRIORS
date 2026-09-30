@@ -2,7 +2,6 @@
 
 AI Learning Companion is a context-aware learning assistant designed to sit inside a lecture video player. It answers student questions using the lecture transcript and accompanying study material, and cites its sources as PDF pages and video timestamps.
 
-> **Documentation status.** This README was written from the project pitch deck (`AI_Learning_Companion_Pitch_Deck_v2.pdf`) only. No codebase was available when it was prepared. Nothing described here has been confirmed as implemented. Every capability is therefore marked either "Documented (not verified)" or "Planned", and anything that depends on the code is marked "Not verified in the current codebase." Update the status columns after auditing the repository.
 
 ---
 
